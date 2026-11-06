@@ -1,6 +1,7 @@
 
 import "dotenv/config";
 
+import authRoutes from "./modules/auth/auth.routes.js";
 import express from "express";
 import cors from "cors";
 import helmet from "helmet";
@@ -56,6 +57,7 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // 8. API routes
 app.use("/api/v1/health", healthRoutes);
+app.use("/api/v1/auth", authRoutes);
 
 // 9. Handle unknown routes
 app.use(notFoundMiddleware);
