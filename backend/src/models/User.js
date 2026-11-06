@@ -37,7 +37,13 @@ const userSchema = new mongoose.Schema(
       type: String,
       enum: ["active", "suspended"],
       default: "active"
-    }
+    },
+
+    operatorId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Operator",
+        default: null
+    },
   },
   {
     timestamps: true

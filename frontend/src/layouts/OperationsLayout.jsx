@@ -1,4 +1,4 @@
-
+import { useAuth } from "../context/AuthContext";
 import { NavLink, Outlet } from "react-router-dom";
 import {
   LayoutDashboard,
@@ -11,15 +11,40 @@ import {
 } from "lucide-react";
 
 const OperationsLayout = () => {
-  const menu = [
-    { label: "Dashboard", path: "/admin", icon: LayoutDashboard },
-    { label: "Buses", path: "/admin/buses", icon: BusFront },
-    { label: "Routes", path: "/admin/routes", icon: Route },
-    { label: "Trips", path: "/admin/trips", icon: CalendarDays },
-    { label: "Bookings", path: "/admin/bookings", icon: Ticket },
-    { label: "Users", path: "/admin/users", icon: Users },
-    { label: "Reports", path: "/admin/reports", icon: ChartNoAxesCombined }
-  ];
+  const { user } = useAuth();
+
+  const dashboardNames = {
+    admin: "Admin Dashboard",
+    operator: "Operator Dashboard",
+    staff: "Staff Dashboard"
+  };
+
+  const menuByRole = {
+    admin: [
+      { label: "Dashboard", path: "/admin" },
+      { label: "Buses", path: "/admin/buses" },
+      { label: "Routes", path: "/admin/routes" },
+      { label: "Trips", path: "/admin/trips" },
+      { label: "Bookings", path: "/admin/bookings" },
+      { label: "Users", path: "/admin/users" },
+      { label: "Reports", path: "/admin/reports" }
+    ],
+
+    operator: [
+      { label: "Dashboard", path: "/operator" },
+      { label: "My Buses", path: "/operator/buses" },
+      { label: "My Trips", path: "/operator/trips" },
+      { label: "Passenger Manifest", path: "/operator/manifests" }
+    ],
+
+    staff: [
+      { label: "Dashboard", path: "/staff" },
+      { label: "Assigned Trips", path: "/staff/trips" },
+      { label: "Ticket Verification", path: "/staff/verification" }
+    ]
+  };
+
+  const menu = menuByRole[user.role] || [];
 
   return (
     <div className="min-h-screen flex bg-slate-100">
@@ -27,7 +52,7 @@ const OperationsLayout = () => {
       <aside className="w-64 bg-slate-950 text-white hidden md:block">
         <div className="p-6 border-b border-slate-800">
           <h1 className="text-xl font-bold">
-            BusGo Admin
+            BusGo {dashboardNames[user.role] || "Operations"}
           </h1>
 
           <p className="text-xs text-slate-400 mt-1">

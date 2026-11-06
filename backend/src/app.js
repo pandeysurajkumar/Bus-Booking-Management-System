@@ -1,6 +1,7 @@
 
 import "dotenv/config";
 
+import adminRoutes from "./modules/admin/admin.routes.js";
 import authRoutes from "./modules/auth/auth.routes.js";
 import express from "express";
 import cors from "cors";
@@ -58,6 +59,7 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 // 8. API routes
 app.use("/api/v1/health", healthRoutes);
 app.use("/api/v1/auth", authRoutes);
+app.use("/api/v1/admin", adminRoutes);
 
 // 9. Handle unknown routes
 app.use(notFoundMiddleware);

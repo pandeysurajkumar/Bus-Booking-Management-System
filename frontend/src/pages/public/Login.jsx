@@ -31,9 +31,19 @@ const Login = () => {
     setLoading(true);
 
     try {
-      await login(form);
+        const result = await login(form);
 
-      navigate("/");
+        const destinations = {
+        passenger: "/",
+        admin: "/admin",
+        operator: "/operator",
+        staff: "/staff"
+        };
+
+        navigate(
+        destinations[result.user.role] || "/unauthorized",
+        { replace: true }
+        );
 
     } catch (error) {
       setError(
