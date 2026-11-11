@@ -1,6 +1,11 @@
 
 import "dotenv/config";
 
+import tripRoutes from "./modules/trips/trip.routes.js";
+import routeRoutes from "./modules/routes/route.routes.js";
+import stopRoutes from "./modules/stops/stop.routes.js";
+import operatorRoutes from "./modules/operators/operator.routes.js";
+import busRoutes from "./modules/buses/bus.routes.js";
 import adminRoutes from "./modules/admin/admin.routes.js";
 import authRoutes from "./modules/auth/auth.routes.js";
 import express from "express";
@@ -60,6 +65,11 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use("/api/v1/health", healthRoutes);
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/admin", adminRoutes);
+app.use("/api/v1/buses", busRoutes);
+app.use("/api/v1/operators", operatorRoutes);
+app.use("/api/v1/stops", stopRoutes);
+app.use("/api/v1/routes", routeRoutes);
+app.use("/api/v1/trips", tripRoutes);
 
 // 9. Handle unknown routes
 app.use(notFoundMiddleware);
