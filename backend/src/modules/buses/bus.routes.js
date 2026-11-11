@@ -1,5 +1,5 @@
 import { Router } from "express";
-
+import { auditAction } from "../audit/audit.middleware.js";
 import {
   createBusController,
   getBusesController,
@@ -25,6 +25,11 @@ router.use(authenticate);
 router.post(
   "/",
   validate(createBusSchema),
+  auditAction({
+    action: "BUS_CREATED",
+    entityType: "Bus",
+    description: "New bus registered",
+  }),
   asyncHandler(createBusController)
 );
 
@@ -41,11 +46,21 @@ router.get(
 router.patch(
   "/:id",
   validate(updateBusSchema),
+  auditAction({
+    action: "BUS_UPDATED",
+    entityType: "Bus",
+    description: "Bus details updated",
+  }),
   asyncHandler(updateBusController)
 );
 
 router.delete(
   "/:id",
+  auditAction({
+    action: "BUS_ARCHIVED",
+    entityType: "Bus",
+    description: "Bus archived",
+  }),
   asyncHandler(archiveBusController)
 );
 

@@ -1,6 +1,6 @@
 
 import authService from "./auth.service.js";
-
+import { createAuditLog } from "../audit/audit.service.js";
 import ApiResponse from "../../utils/ApiResponse.js";
 
 const REFRESH_TOKEN_DAYS = Number(
@@ -40,10 +40,27 @@ export const register = async (req, res) => {
 };
 
 // LOGIN
+
+ // LOGIN
 export const login = async (req, res) => {
   const result = await authService.login(req.body);
 
   setRefreshCookie(res, result.refreshToken);
+
+  // Create audit log after successful login
+  const user = result.user;
+
+  await createAuditLog({
+    actorId: user._id,
+    actorRole: user.role,
+    operatorId: user.operatorId || null,
+    action: "USER_LOGIN",
+    entityType: "User",
+    entityId: user._id,
+    description: "User logged in successfully",
+    ipAddress: req.ip,
+    userAgent: req.get("user-agent"),
+  });
 
   res.status(200).json(
     new ApiResponse(
@@ -51,11 +68,12 @@ export const login = async (req, res) => {
       "Login successful",
       {
         user: result.user,
-        accessToken: result.accessToken
+        accessToken: result.accessToken,
       }
     )
   );
 };
+
 
 // REFRESH TOKEN
 export const refresh = async (req, res) => {
@@ -78,8 +96,23 @@ export const refresh = async (req, res) => {
 };
 
 // LOGOUT
+
+ // LOGOUT
 export const logout = async (req, res) => {
-  await authService.logout(req.cookies.refreshToken);
+  await authService.logout(req.cookies?.refreshToken);
+
+  // Create audit log after successful logout
+  await createAuditLog({
+    actorId: req.user._id || req.user.id,
+    actorRole: req.user.role,
+    operatorId: req.user.operatorId || null,
+    action: "USER_LOGOUT",
+    entityType: "User",
+    entityId: req.user._id || req.user.id,
+    description: "User logged out successfully",
+    ipAddress: req.ip,
+    userAgent: req.get("user-agent"),
+  });
 
   res.clearCookie(
     "refreshToken",
@@ -90,6 +123,7 @@ export const logout = async (req, res) => {
     new ApiResponse(200, "Logout successful")
   );
 };
+
 
 // CURRENT USER
 export const getMe = async (req, res) => {

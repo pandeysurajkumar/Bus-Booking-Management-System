@@ -1,5 +1,5 @@
 import { Router } from "express";
-
+import { auditAction } from "../audit/audit.middleware.js";
 import {
   createBookingController,
   getMyBookingsController,
@@ -21,6 +21,11 @@ router.post(
   "/",
   authorizeRoles("passenger"),
   validate(createBookingSchema),
+  auditAction({
+  action: "BOOKING_CREATED",
+  entityType: "Booking",
+  description: "Passenger confirmed a booking",
+  }),
   asyncHandler(createBookingController)
 );
 

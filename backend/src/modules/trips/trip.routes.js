@@ -1,5 +1,5 @@
 import { Router } from "express";
-
+import { auditAction } from "../audit/audit.middleware.js";
 import {
   createTripController,
   getTripsController,
@@ -35,6 +35,11 @@ router.post(
   "/",
   authorizeRoles("admin", "operator"),
   validate(createTripSchema),
+  auditAction({
+    action: "TRIP_CREATED",
+    entityType: "Trip",
+    description: "Trip schedule created",
+  }),
   asyncHandler(createTripController)
 );
 
@@ -42,12 +47,22 @@ router.patch(
   "/:id",
   authorizeRoles("admin", "operator"),
   validate(updateTripSchema),
+  auditAction({
+    action: "TRIP_UPDATED",
+    entityType: "Trip",
+    description: "Trip schedule updated",
+  }),
   asyncHandler(updateTripController)
 );
 
 router.patch(
   "/:id/cancel",
   authorizeRoles("admin", "operator"),
+  auditAction({
+    action: "TRIP_CANCELLED",
+    entityType: "Trip",
+    description: "Trip schedule cancelled",
+  }),
   asyncHandler(cancelTripController)
 );
 
@@ -55,6 +70,11 @@ router.patch(
   "/:id/status",
   authorizeRoles("admin", "operator"),
   validate(updateTripStatusSchema),
+  auditAction({
+    action: "TRIP_STATUS_UPDATED",
+    entityType: "Trip",
+    description: "Trip lifecycle status changed",
+  }),
   asyncHandler(updateTripStatusController)
 );
 

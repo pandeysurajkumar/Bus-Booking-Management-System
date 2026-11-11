@@ -1,6 +1,8 @@
 
 import "dotenv/config";
 
+import auditRoutes from "./modules/audit/audit.routes.js";
+import reportRoutes from "./modules/reports/report.routes.js";
 import cancellationRoutes from "./modules/cancellation/cancellation.routes.js";
 import bookingRoutes from "./modules/bookings/booking.routes.js";
 import seatRoutes from "./modules/seats/seat.routes.js";
@@ -78,6 +80,8 @@ app.use("/api/v1/search", searchRoutes);
 app.use("/api/v1/seats", seatRoutes);
 app.use("/api/v1/bookings", bookingRoutes);
 app.use("/api/v1/cancellations", cancellationRoutes);
+app.use("/api/v1/reports", reportRoutes);
+app.use("/api/v1/audit-logs", auditRoutes);
 
 // 9. Handle unknown routes
 app.use(notFoundMiddleware);

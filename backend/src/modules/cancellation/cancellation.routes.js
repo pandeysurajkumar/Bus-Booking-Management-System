@@ -1,5 +1,5 @@
 import { Router } from "express";
-
+import { auditAction } from "../audit/audit.middleware.js";
 import {
   cancelBookingController,
   getCancellationPolicyController,
@@ -21,26 +21,39 @@ router.get(
   "/policy",
   getCancellationPolicyController
 );
+  router.put(
+    "/policy",
+    authenticate,
+    authorizeRoles("admin"),
+    validate(updateCancellationPolicySchema),
+    auditAction({
+      action: "CANCELLATION_POLICY_UPDATED",
+      entityType: "CancellationPolicy",
+      description: "Admin updated cancellation policy",
+    }),
+    updateCancellationPolicyController
+  );
 
-router.put(
-  "/policy",
-  authenticate,
-  authorizeRoles("admin"),
-  validate(updateCancellationPolicySchema),
-  updateCancellationPolicyController
-);
+  router.post(
+    "/:pnr/pay",
+    authenticate,
+    authorizeRoles("passenger"),
+    auditAction({
+      action: "PAYMENT_SIMULATED",
+      entityType: "Booking",
+      description: "Passenger completed simulated payment",
+    }),
+    simulatePaymentController
+  );
 
-router.post(
-  "/:pnr/pay",
-  authenticate,
-  authorizeRoles("passenger"),
-  simulatePaymentController
-);
-
-router.post(
-  "/:pnr/cancel",
-  authenticate,
-  cancelBookingController
-);
-
+  router.post(
+    "/:pnr/cancel",
+    authenticate,
+    auditAction({
+      action: "BOOKING_CANCELLED",
+      entityType: "Booking",
+      description: "Booking was cancelled",
+    }),
+    cancelBookingController
+  );
 export default router;
