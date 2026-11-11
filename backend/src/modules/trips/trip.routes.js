@@ -9,10 +9,10 @@ import {
   updateTripStatusController,
 } from "./trip.controller.js";
 
-import { authenticate } from "../../middlewares/auth.middleware.js";
+import  authenticate  from "../../middlewares/auth.middleware.js";
 import { authorizeRoles } from "../../middlewares/authorize.middleware.js";
-import { validate } from "../../middlewares/validate.middleware.js";
-import { asyncHandler } from "../../utils/asyncHandler.js";
+import  validate  from "../../middlewares/validate.middleware.js";
+import  asyncHandler  from "../../utils/asyncHandler.js";
 
 import {
   createTripSchema,
