@@ -5,6 +5,7 @@ import Bus from "../buses/bus.model.js";
 import Operator from "../operators/operator.model.js";
 import ApiError from "../../utils/ApiError.js";
 import { withBusScheduleLock } from "./trip.schedule-lock.js";
+import { initializeTripSeats } from "../seats/seat.service.js";
 
 export const createTrip = async (data, user) => {
   const route = await Route.findById(data.routeId);
@@ -77,7 +78,7 @@ export const createTrip = async (data, user) => {
       throw new ApiError(400, "Bus has no active seats.");
     }
 
-    return Trip.create({
+    const trip = await Trip.create({
       operatorId,
       routeId: route._id,
       busId: lockedBus._id,
@@ -87,6 +88,15 @@ export const createTrip = async (data, user) => {
       availableSeats: totalSeats,
       createdBy: user._id,
     });
+
+    try {
+      await initializeTripSeats(trip);
+    } catch (error) {
+      await Trip.deleteOne({ _id: trip._id });
+      throw error;
+    }
+
+    return trip;
   });
 };
 

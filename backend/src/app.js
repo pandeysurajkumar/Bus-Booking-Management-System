@@ -1,6 +1,7 @@
 
 import "dotenv/config";
 
+import seatRoutes from "./modules/seats/seat.routes.js";
 import searchRoutes from "./modules/search/search.routes.js";
 import tripRoutes from "./modules/trips/trip.routes.js";
 import routeRoutes from "./modules/routes/route.routes.js";
@@ -72,6 +73,7 @@ app.use("/api/v1/stops", stopRoutes);
 app.use("/api/v1/routes", routeRoutes);
 app.use("/api/v1/trips", tripRoutes);
 app.use("/api/v1/search", searchRoutes);
+app.use("/api/v1/seats", seatRoutes);
 
 // 9. Handle unknown routes
 app.use(notFoundMiddleware);
