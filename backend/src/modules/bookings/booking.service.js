@@ -14,7 +14,7 @@ const generatePNR = () => {
 };
 
 export const createBooking = async (data, user) => {
-  const userId = user._id;
+  const userId = user._id || user.id;
 
   // Idempotency: return the original booking for a repeated request.
   if (data.idempotencyKey) {

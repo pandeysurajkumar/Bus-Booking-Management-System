@@ -10,15 +10,20 @@ import {
   X,
 } from "lucide-react";
 import { useState } from "react";
+import { useAuth } from "../../context/AuthContext";
 import "../../styles/operator.css";
 
 export default function OperatorLayout() {
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
 
-  const logout = () => {
-    localStorage.removeItem("accessToken");
-    navigate("/login");
+  const handleLogout = async () => {
+    try {
+      await logout();
+    } finally {
+      navigate("/login");
+    }
   };
 
   const links = [
@@ -36,6 +41,11 @@ export default function OperatorLayout() {
       path: "/operator/trips",
       label: "Trip Schedules",
       icon: CalendarDays,
+    },
+    {
+      path: "/operator/manifest",
+      label: "Manifest",
+      icon: Users,
     },
     {
       path: "/operator/reports",
@@ -70,7 +80,7 @@ export default function OperatorLayout() {
           ))}
         </nav>
 
-        <button className="operator-logout" onClick={logout}>
+        <button className="operator-logout" onClick={handleLogout}>
           <LogOut size={18} />
           Logout
         </button>
@@ -94,10 +104,12 @@ export default function OperatorLayout() {
 
           <div>
             <strong>Operator Workspace</strong>
-            <span>Manage your bus operations</span>
+            <span>{user?.name || "Manage your bus operations"}</span>
           </div>
 
-          <div className="operator-avatar">OP</div>
+          <div className="operator-avatar">
+            {(user?.name || "OP").slice(0, 2).toUpperCase()}
+          </div>
         </header>
 
         <main className="operator-main">

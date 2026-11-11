@@ -15,6 +15,13 @@ const Navbar = () => {
         : "text-slate-600 hover:text-blue-700"
     }`;
 
+  const workspacePath = {
+    admin: "/admin",
+    operator: "/operator",
+    staff: "/staff",
+    passenger: "/my-bookings",
+  }[user?.role];
+
   const handleLogout = async () => {
     try {
       await logout();
@@ -26,27 +33,25 @@ const Navbar = () => {
   };
 
   return (
-    <header className="bg-white border-b border-slate-200">
+    <header className="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-slate-200">
       <div className="max-w-7xl mx-auto px-5 min-h-16 flex items-center justify-between gap-4">
-
         <Link to="/" className="flex items-center gap-2">
-          <BusFront className="text-blue-700" size={28} />
-
+          <span className="grid h-9 w-9 place-items-center rounded-xl bg-blue-50 text-blue-700">
+            <BusFront size={22} />
+          </span>
           <span className="text-xl font-bold text-slate-900">
             Bus<span className="text-blue-700">Go</span>
           </span>
         </Link>
 
         <nav className="hidden md:flex items-center gap-7">
-          <NavLink to="/" className={navClass}>
+          <NavLink to="/" className={navClass} end>
             Home
           </NavLink>
-
           <NavLink to="/search" className={navClass}>
             Search Buses
           </NavLink>
-
-          {isAuthenticated && (
+          {isAuthenticated && user?.role === "passenger" && (
             <NavLink to="/my-bookings" className={navClass}>
               My Bookings
             </NavLink>
@@ -54,16 +59,22 @@ const Navbar = () => {
         </nav>
 
         <div className="flex items-center gap-3">
-
           {isAuthenticated ? (
             <>
+              {workspacePath && user?.role !== "passenger" && (
+                <Link
+                  to={workspacePath}
+                  className="hidden sm:inline-flex text-sm font-semibold text-blue-700 hover:text-blue-800"
+                >
+                  Dashboard
+                </Link>
+              )}
               <span className="text-sm font-semibold text-slate-700 hidden sm:block">
                 {user.name}
               </span>
-
               <button
                 onClick={handleLogout}
-                className="text-sm font-semibold text-red-600 hover:text-red-800"
+                className="text-sm font-semibold text-slate-600 hover:text-red-700"
               >
                 Logout
               </button>
@@ -76,7 +87,6 @@ const Navbar = () => {
               >
                 Login
               </Link>
-
               <Link
                 to="/register"
                 className="bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-blue-800"
@@ -85,7 +95,6 @@ const Navbar = () => {
               </Link>
             </>
           )}
-
         </div>
       </div>
     </header>

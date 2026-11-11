@@ -11,3 +11,9 @@ export const createOperatorSchema = z.object({
     address: z.string().trim().min(5).max(300),
   }),
 });
+
+export const updateOperatorStatusSchema = z.object({
+  body: z.object({
+    status: z.enum(["active", "inactive", "suspended"]),
+  }),
+});

@@ -64,12 +64,15 @@ const Login = () => {
         className="bg-white border border-slate-200 shadow-lg rounded-2xl p-8 w-full max-w-md"
       >
 
-        <h1 className="text-3xl font-bold text-slate-900">
+        <p className="text-xs font-bold tracking-[0.2em] text-blue-700">
+          BUSGO
+        </p>
+        <h1 className="text-3xl font-bold text-slate-900 mt-2">
           Welcome Back
         </h1>
 
         <p className="text-slate-500 mt-2">
-          Login to manage your bus bookings.
+          Sign in to search trips, manage bookings, or open your workspace.
         </p>
 
         {error && (

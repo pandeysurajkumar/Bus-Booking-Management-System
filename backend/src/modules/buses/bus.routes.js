@@ -54,6 +54,16 @@ router.patch(
   asyncHandler(updateBusController)
 );
 
+router.patch(
+  "/:id/archive",
+  auditAction({
+    action: "BUS_ARCHIVED",
+    entityType: "Bus",
+    description: "Bus archived",
+  }),
+  asyncHandler(archiveBusController)
+);
+
 router.delete(
   "/:id",
   auditAction({

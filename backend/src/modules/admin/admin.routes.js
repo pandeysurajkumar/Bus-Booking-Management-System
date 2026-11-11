@@ -9,17 +9,22 @@ import {
 } from "../../middlewares/authorize.middleware.js";
 
 import { ROLES } from "../../constants/roles.js";
-
 import { PERMISSIONS } from "../../constants/permissions.js";
-
 import ApiResponse from "../../utils/ApiResponse.js";
+import asyncHandler from "../../utils/asyncHandler.js";
+
+import {
+  listUsersController,
+  updateUserStatusController,
+  listBookingsController
+} from "./admin.controller.js";
 
 const router = express.Router();
 
-// Only administrators can access this endpoint.
+router.use(authenticate);
+
 router.get(
   "/dashboard",
-  authenticate,
   authorizeRoles(ROLES.ADMIN),
   (req, res) => {
     res.status(200).json(
@@ -32,10 +37,8 @@ router.get(
   }
 );
 
-// Admin and operator can manage trips.
 router.get(
   "/trip-management",
-  authenticate,
   authorizePermissions(PERMISSIONS.TRIP_MANAGE),
   (req, res) => {
     res.status(200).json(
@@ -46,6 +49,24 @@ router.get(
       )
     );
   }
+);
+
+router.get(
+  "/users",
+  authorizeRoles(ROLES.ADMIN),
+  asyncHandler(listUsersController)
+);
+
+router.patch(
+  "/users/:id/status",
+  authorizeRoles(ROLES.ADMIN),
+  asyncHandler(updateUserStatusController)
+);
+
+router.get(
+  "/bookings",
+  authorizeRoles(ROLES.ADMIN),
+  asyncHandler(listBookingsController)
 );
 
 export default router;

@@ -31,12 +31,20 @@ const Home = () => {
               seats through one convenient booking platform.
             </p>
 
-            <Link
-              to="/search"
-              className="inline-block mt-8 bg-white text-blue-800 px-7 py-3 rounded-lg font-bold hover:bg-blue-50"
-            >
-              Search Buses
-            </Link>
+            <div className="mt-8 flex flex-wrap gap-3">
+              <Link
+                to="/search"
+                className="inline-block bg-white text-blue-800 px-7 py-3 rounded-lg font-bold hover:bg-blue-50"
+              >
+                Search Buses
+              </Link>
+              <Link
+                to="/login"
+                className="inline-block border border-white/40 text-white px-7 py-3 rounded-lg font-semibold hover:bg-white/10"
+              >
+                Sign in
+              </Link>
+            </div>
 
           </div>
 

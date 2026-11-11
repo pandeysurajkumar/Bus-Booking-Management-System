@@ -47,10 +47,12 @@ const authenticate = asyncHandler(async (req, res, next) => {
   }
 
   req.user = {
+    _id: user._id,
     id: user._id.toString(),
     name: user.name,
     email: user.email,
-    role: user.role
+    role: user.role,
+    operatorId: user.operatorId || null
   };
 
   next();

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Search, MapPin, CalendarDays, Clock, Armchair } from "lucide-react";
+import { Search, MapPin, CalendarDays, Clock, Armchair, Bus } from "lucide-react";
 import api from "../../api/client";
 import "../../styles/passenger.css";
 
@@ -23,8 +23,13 @@ export default function SearchTrips() {
   useEffect(() => {
     const fetchStops = async () => {
       try {
-        const response = await api.get("/stops");
-        setStops(response.data.data?.stops || response.data.data || []);
+        const response = await api.get("/stops", {
+          params: { page: 1, limit: 200 },
+        });
+        const payload = response.data.data;
+        setStops(
+          Array.isArray(payload) ? payload : payload?.stops || []
+        );
       } catch (err) {
         setError(
           err.response?.data?.message || "Unable to load stops"
@@ -189,12 +194,14 @@ export default function SearchTrips() {
               <div className="trip-card-top">
                 <div>
                   <h3>
-                    {trip.busId?.busName ||
+                    {trip.bus?.name ||
+                      trip.busId?.busName ||
                       trip.busId?.registrationNumber ||
                       "Passenger Bus"}
                   </h3>
                   <span className="bus-type">
-                    {trip.busId?.busType || "Bus"}
+                    {trip.bus?.type || trip.busId?.busType || "Bus"}
+                    {trip.operator ? ` · ${trip.operator}` : ""}
                   </span>
                 </div>
 

@@ -1,10 +1,19 @@
 
 class ApiResponse {
-  constructor(statusCode, message, data = null) {
+  constructor(statusCode, messageOrData, dataOrMessage = null) {
     this.success = statusCode < 400;
     this.statusCode = statusCode;
-    this.message = message;
-    this.data = data;
+
+    const firstIsString = typeof messageOrData === "string";
+    const secondIsString = typeof dataOrMessage === "string";
+
+    if (firstIsString) {
+      this.message = messageOrData;
+      this.data = secondIsString ? null : dataOrMessage;
+    } else {
+      this.data = messageOrData ?? null;
+      this.message = secondIsString ? dataOrMessage : "Success";
+    }
   }
 }
 

@@ -13,11 +13,14 @@ export const searchTrips = async (query) => {
     busType,
     minFare,
     maxFare,
-    sortBy,
-    order,
-    page,
-    limit,
+    sortBy = "departure",
+    order = "asc",
+    page = 1,
+    limit = 10,
   } = query;
+
+  const pageNumber = Math.max(Number(page) || 1, 1);
+  const pageSize = Math.min(Math.max(Number(limit) || 10, 1), 50);
 
   if (
     !mongoose.isValidObjectId(originStopId) ||
@@ -201,10 +204,10 @@ export const searchTrips = async (query) => {
   });
 
   const total = matchingTrips.length;
-  const startIndex = (page - 1) * limit;
+  const startIndex = (pageNumber - 1) * pageSize;
 
   return {
-    trips: matchingTrips.slice(startIndex, startIndex + limit),
+    trips: matchingTrips.slice(startIndex, startIndex + pageSize),
 
     search: {
       origin: originStop.name,
@@ -214,9 +217,9 @@ export const searchTrips = async (query) => {
 
     pagination: {
       total,
-      page,
-      limit,
-      totalPages: Math.ceil(total / limit),
+      page: pageNumber,
+      limit: pageSize,
+      totalPages: Math.ceil(total / pageSize),
     },
   };
 };

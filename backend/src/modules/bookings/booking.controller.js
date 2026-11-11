@@ -15,7 +15,7 @@ export const createBookingController = async (req, res) => {
 };
 
 export const getMyBookingsController = async (req, res) => {
-  const result = await getMyBookings(req.user._id, req.query);
+  const result = await getMyBookings(req.user._id || req.user.id, req.query);
 
   return res.status(200).json(
     new ApiResponse(200, result, "Bookings fetched successfully.")

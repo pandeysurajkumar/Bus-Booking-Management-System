@@ -3,6 +3,22 @@ import { Bus, Plus, RefreshCw } from "lucide-react";
 
 import api from "../../api/client";
 
+const AMENITY_OPTIONS = [
+  { label: "AC", value: "air_conditioning" },
+  { label: "WiFi", value: "wifi" },
+  { label: "Charging", value: "charging_point" },
+  { label: "Water Bottle", value: "water_bottle" },
+  { label: "Blanket", value: "blanket" },
+];
+
+const seatPosition = (column, columns) => {
+  if (column === 1 || column === Number(columns)) return "window";
+  if (Number(columns) >= 4 && (column === 2 || column === Number(columns) - 1)) {
+    return "aisle";
+  }
+  return "middle";
+};
+
 const initialForm = {
   registrationNumber: "",
   busName: "",
@@ -91,7 +107,7 @@ export default function ManageBuses() {
           column,
           deck: 1,
           seatType: form.busType === "sleeper" ? "sleeper" : "seater",
-          position: "standard",
+          position: seatPosition(column, columns),
           isActive: true,
         });
       }
@@ -138,7 +154,7 @@ export default function ManageBuses() {
     setSuccess("");
 
     try {
-      await api.patch(`/buses/${busId}/archive`);
+      await api.delete(`/buses/${busId}`);
       setSuccess("Bus archived successfully");
       await fetchBuses();
     } catch (err) {
@@ -252,18 +268,16 @@ export default function ManageBuses() {
             <label>Amenities</label>
 
             <div className="amenity-options">
-              {["AC", "WiFi", "Charging", "Water Bottle", "Blanket"].map(
-                (amenity) => (
-                  <label key={amenity}>
+              {AMENITY_OPTIONS.map((amenity) => (
+                  <label key={amenity.value}>
                     <input
                       type="checkbox"
-                      checked={form.amenities.includes(amenity)}
-                      onChange={() => handleAmenity(amenity)}
+                      checked={form.amenities.includes(amenity.value)}
+                      onChange={() => handleAmenity(amenity.value)}
                     />
-                    {amenity}
+                    {amenity.label}
                   </label>
-                )
-              )}
+                ))}
             </div>
           </div>
 

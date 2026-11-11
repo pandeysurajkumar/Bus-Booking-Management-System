@@ -137,7 +137,7 @@ export const holdSeat = async (tripId, seatNumber, user) => {
     {
       $set: {
         status: "held",
-        heldBy: user._id,
+        heldBy: user._id || user.id,
         holdUntil,
       },
     },
@@ -171,7 +171,7 @@ export const releaseSeat = async (tripId, seatNumber, user) => {
       tripId,
       seatNumber: seatNumber.trim().toUpperCase(),
       status: "held",
-      heldBy: user._id,
+      heldBy: user._id || user.id,
       holdUntil: { $gt: new Date() },
     },
     {

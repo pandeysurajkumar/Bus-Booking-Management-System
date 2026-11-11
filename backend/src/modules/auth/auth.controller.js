@@ -101,18 +101,19 @@ export const refresh = async (req, res) => {
 export const logout = async (req, res) => {
   await authService.logout(req.cookies?.refreshToken);
 
-  // Create audit log after successful logout
-  await createAuditLog({
-    actorId: req.user._id || req.user.id,
-    actorRole: req.user.role,
-    operatorId: req.user.operatorId || null,
-    action: "USER_LOGOUT",
-    entityType: "User",
-    entityId: req.user._id || req.user.id,
-    description: "User logged out successfully",
-    ipAddress: req.ip,
-    userAgent: req.get("user-agent"),
-  });
+  if (req.user) {
+    await createAuditLog({
+      actorId: req.user._id || req.user.id,
+      actorRole: req.user.role,
+      operatorId: req.user.operatorId || null,
+      action: "USER_LOGOUT",
+      entityType: "User",
+      entityId: req.user._id || req.user.id,
+      description: "User logged out successfully",
+      ipAddress: req.ip,
+      userAgent: req.get("user-agent"),
+    });
+  }
 
   res.clearCookie(
     "refreshToken",
