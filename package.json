@@ -1,0 +1,17 @@
+{
+  "name": "bus-booking-platform",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "backend",
+    "frontend"
+  ],
+  "scripts": {
+    "backend:dev": "npm --workspace=backend run dev",
+    "backend:start": "npm --workspace=backend start",
+    "backend:seed": "npm --workspace=backend run seed",
+    "backend:test": "npm --workspace=backend test",
+    "frontend:dev": "npm --workspace=frontend run dev",
+    "frontend:build": "npm --workspace=frontend run build"
+  }
+}

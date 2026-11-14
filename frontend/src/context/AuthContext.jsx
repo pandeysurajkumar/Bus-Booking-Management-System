@@ -1,105 +1,77 @@
-
-import {
-  createContext,
-  useContext,
-  useEffect,
-  useRef,
-  useState
-} from "react";
-
-import {
-  loginUser,
-  registerUser,
-  refreshSession,
-  logoutUser
-} from "../features/auth/authService";
-
-import { setAccessToken } from "../services/api";
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import api from '../api/axios';
 
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(() => {
+    const savedUser = localStorage.getItem('user');
+    return savedUser ? JSON.parse(savedUser) : null;
+  });
+  const [token, setToken] = useState(() => localStorage.getItem('token') || null);
   const [loading, setLoading] = useState(true);
 
-  const initialized = useRef(false);
-
-  // Restore an existing session when the application starts.
   useEffect(() => {
-    if (initialized.current) return;
-
-    initialized.current = true;
-
-    const initializeAuth = async () => {
-      try {
-        const result = await refreshSession();
-
-        setAccessToken(result.accessToken);
-        setUser(result.user);
-
-      } catch {
-        setAccessToken(null);
-        setUser(null);
-
-      } finally {
-        setLoading(false);
+    const verifyUser = async () => {
+      if (token) {
+        try {
+          const res = await api.get('/auth/me');
+          setUser(res.data.data);
+          localStorage.setItem('user', JSON.stringify(res.data.data));
+        } catch {
+          logout();
+        }
       }
+      setLoading(false);
     };
+    verifyUser();
+  }, [token]);
 
-    initializeAuth();
-  }, []);
-
-  const login = async (credentials) => {
-    const result = await loginUser(credentials);
-
-    setAccessToken(result.accessToken);
-    setUser(result.user);
-
-    return result;
+  const login = async (email, password) => {
+    const res = await api.post('/auth/login', { email, password });
+    const { user: userData, token: jwtToken } = res.data.data;
+    setUser(userData);
+    setToken(jwtToken);
+    localStorage.setItem('token', jwtToken);
+    localStorage.setItem('user', JSON.stringify(userData));
+    return userData;
   };
 
-  const register = async (userData) => {
-    const result = await registerUser(userData);
-
-    setAccessToken(result.accessToken);
-    setUser(result.user);
-
-    return result;
+  const register = async (formData) => {
+    const res = await api.post('/auth/register', formData);
+    const { user: userData, token: jwtToken } = res.data.data;
+    setUser(userData);
+    setToken(jwtToken);
+    localStorage.setItem('token', jwtToken);
+    localStorage.setItem('user', JSON.stringify(userData));
+    return userData;
   };
 
-  const logout = async () => {
-    try {
-      await logoutUser();
-    } finally {
-      setAccessToken(null);
-      setUser(null);
-    }
-  };
-
-  const value = {
-    user,
-    loading,
-    isAuthenticated: Boolean(user),
-    login,
-    register,
-    logout
+  const logout = () => {
+    setUser(null);
+    setToken(null);
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
   };
 
   return (
-    <AuthContext.Provider value={value}>
+    <AuthContext.Provider
+      value={{
+        user,
+        token,
+        loading,
+        isAuthenticated: !!user,
+        isAdmin: user?.role === 'admin',
+        isOperator: user?.role === 'operator' || user?.role === 'admin',
+        isCustomer: user?.role === 'customer',
+        login,
+        register,
+        logout
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
 };
 
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-
-  if (!context) {
-    throw new Error(
-      "useAuth must be used inside AuthProvider"
-    );
-  }
-
-  return context;
-};
+export const useAuth = () => useContext(AuthContext);
